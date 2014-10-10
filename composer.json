@@ -1,0 +1,21 @@
+{
+    "name": "guide42/traba",
+    "type": "library",
+    "description": "An alternative to common pattern matching to route an URL to a resource",
+    "keywords": ["router", "routing", "traversal"],
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "Juan M Martínez",
+            "email": "traba@jm.guide42.com",
+            "homepage": "http://jm.guide42.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "classmap": ["traba.php"]
+    }
+}
