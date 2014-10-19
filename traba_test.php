@@ -25,12 +25,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $router->addRoute('view_user', 'User', '');
         $router->addRoute('view_user', 'User', 'edit');
 
-        list($route, $context) = $router->match(
+        list($route, $resource) = $router->match(
             array_filter(explode('/', '/u/123'))
         );
 
-        $this->assertInstanceOf('User', $context);
-        $this->assertEquals('John Doe', $context->name);
+        $this->assertInstanceOf('User', $resource);
+        $this->assertEquals('John Doe', $resource->name);
         $this->assertEquals('view_user', $route);
     }
 
@@ -49,10 +49,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $router = new Router($root);
         $router->addRoute('edit_user', 'User', 'edit');
 
-        list($route, $context) = $router->matchRequest($request);
+        list($route, $resource) = $router->matchRequest($request);
 
-        $this->assertInstanceOf('User', $context);
-        $this->assertEquals('John Doe', $context->name);
+        $this->assertInstanceOf('User', $resource);
+        $this->assertEquals('John Doe', $resource->name);
         $this->assertEquals('edit_user', $route);
     }
 
