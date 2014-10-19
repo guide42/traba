@@ -49,13 +49,13 @@ class Router implements RouterInterface
     {
         $node = call_user_func($this->traverser, $this->root, $segments);
         $route = call_user_func($this->matcher, $this->routes,
-            $node['context'], $node['name']);
+            $node['resource'], $node['name']);
 
         if ($route === null) {
             throw new \RuntimeException('Route not found');
         }
 
-        return [$route, $node['context']];
+        return [$route, $node['resource']];
     }
 
     public function matchRequest($request, $prefix='')
@@ -84,7 +84,7 @@ function traverser($root, array $segments)
             !isset($root[$segment])
         ) {
             return array(
-                'context'   => $root,
+                'resource'  => $root,
                 'name'      => $segment,
                 'traversed' => array_slice($segments, 0, $i),
                 'after'     => array_slice($segments, $i + 1),
@@ -95,7 +95,7 @@ function traverser($root, array $segments)
     }
 
     return array(
-        'context'   => $root,
+        'resource'  => $root,
         'name'      => '',
         'traversed' => $segments,
         'after'     => [],

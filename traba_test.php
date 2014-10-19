@@ -66,7 +66,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $router->matchRequest(array());
     }
 
-    public function testMatchWithoutContext()
+    public function testMatchWithoutResource()
     {
         $router = new Router(array());
         $router->addRoute('view_home', null, '');
