@@ -58,7 +58,7 @@ class Router implements RouterInterface
         return [$route, $node['context']];
     }
 
-    public function matchRequest($request)
+    public function matchRequest($request, $prefix='')
     {
         if (method_exists($request, 'getUri')) {
             $uri = (string) $request->getUri();
@@ -66,6 +66,10 @@ class Router implements RouterInterface
             throw new \InvalidArgumentException(
                 'Could not find URI in the request'
             );
+        }
+
+        if (strpos($uri, $prefix) === 0) {
+            $uri = substr($uri, strlen($prefix));
         }
 
         return $this->match(array_filter(explode('/', $uri)));
