@@ -78,6 +78,24 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('view_home', $rhome);
         $this->assertEquals('view_news', $rnews);
     }
+
+    public function testMatchRequestWithPrefix()
+    {
+        $router = new Router(array());
+        $router->addRoute('view_home', null, '');
+        $router->addRoute('view_news', null, 'news');
+
+        $prefix = '/example.php';
+
+        $reqhome = new Request('GET', '/example.php/');
+        $reqnews = new Request('GET', '/example.php/news');
+
+        list($rhome, $_) = $router->matchRequest($reqhome, $prefix);
+        list($rnews, $_) = $router->matchRequest($reqnews, $prefix);
+
+        $this->assertEquals('view_home', $rhome);
+        $this->assertEquals('view_news', $rnews);
+    }
 }
 
 ### FIXTURES ##################################################################

@@ -68,7 +68,7 @@ class Router implements RouterInterface
             );
         }
 
-        if (strpos($uri, $prefix) === 0) {
+        if (!empty($prefix) && strpos($uri, $prefix) === 0) {
             $uri = substr($uri, strlen($prefix));
         }
 
