@@ -96,6 +96,23 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('view_home', $rhome);
         $this->assertEquals('view_news', $rnews);
     }
+
+    public function testAssemble()
+    {
+        $root = new Resource(array(
+            'u' => new UserLocator(),
+        ));
+
+        $segments = array('u', '123');
+
+        $router = new Router($root);
+        $router->addRoute('view_user', 'User', '');
+        $router->addRoute('view_user', 'User', 'edit');
+
+        list($route, $resource) = $router->match($segments);
+
+        $this->assertEquals($segments, $router->assemble($resource));
+    }
 }
 
 ### FIXTURES ##################################################################
@@ -118,6 +135,9 @@ class Request {
 }
 
 class User {
+    public $__name = '';
+    public $__parent = null;
+
     public $name;
     public $age;
     public function __construct($name, $age) {
@@ -127,7 +147,11 @@ class User {
 }
 
 class UserLocator implements \ArrayAccess {
+    public $__name = '';
+    public $__parent = null;
+
     public $users;
+
     public function __construct() {
         $this->users = array(
             123 => new User('John Doe', 42),
@@ -139,10 +163,28 @@ class UserLocator implements \ArrayAccess {
     }
 
     public function offsetGet($offset) {
-        return $this->users[$offset];
+        $user = $this->users[$offset];
+        $user->__parent = $this;
+        $user->__name = $offset;
+
+        return $user;
     }
 
     public function offsetSet($offset, $value) {}
 
     public function offsetUnset($offset) {}
+}
+
+class Resource extends \ArrayObject {
+    public $__name = '';
+    public $__parent = null;
+
+    public function offsetGet($index)
+    {
+        $resource = parent::offsetGet($index);
+        $resource->__parent = $this;
+        $resource->__name = $index;
+
+        return $resource;
+    }
 }

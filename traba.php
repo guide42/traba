@@ -14,6 +14,16 @@ interface RouterInterface
      * @return array
      */
     function match(array $segments);
+
+    /**
+     * Inverse of match, transforms a resource into segments.
+     *
+     * The given resource and, it whole lineage need to be location-aware for
+     * the assemble to work.
+     *
+     * @param object $resource
+     */
+    function assemble($resource);
 }
 
 class Router implements RouterInterface
@@ -21,11 +31,13 @@ class Router implements RouterInterface
     protected $root;
     protected $traverser;
     protected $matcher;
+    protected $assembler;
     protected $routes;
 
     public function __construct($root,
         callable $traverser=null,
-        callable $matcher=null
+        callable $matcher=null,
+        callable $assembler=null
     ) {
         if ($traverser === null) {
             $traverser = __NAMESPACE__ . '\\traverser';
@@ -35,9 +47,14 @@ class Router implements RouterInterface
             $matcher = __NAMESPACE__ . '\\matcher';
         }
 
+        if ($assembler === null) {
+            $assembler = __NAMESPACE__ . '\\assembler';
+        }
+
         $this->root = $root;
         $this->traverser = $traverser;
         $this->matcher = $matcher;
+        $this->assembler = $assembler;
         $this->routes = [];
     }
 
@@ -73,6 +90,11 @@ class Router implements RouterInterface
         }
 
         return $this->match(array_filter(explode('/', $uri)));
+    }
+
+    public function assemble($resource)
+    {
+        return call_user_func($this->assembler, $resource);
     }
 }
 
@@ -119,4 +141,25 @@ function matcher($routes, $resource, $name)
     }
 
     return null;
+}
+
+function assembler($resource)
+{
+    $parts = array();
+
+    while ($resource !== null) {
+        if (!is_object($resource) ||
+            !property_exists($resource, '__parent') ||
+            !property_exists($resource, '__name')
+        ) {
+            throw new \RuntimeException(
+                'The assembler needs a full tree of location aware resources'
+            );
+        }
+
+        $parts[] = $resource->__name;
+        $resource = $resource->__parent;
+    }
+
+    return array_values(array_filter(array_reverse($parts)));
 }
