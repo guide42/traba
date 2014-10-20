@@ -1,0 +1,6 @@
+site_name: Traba
+theme: yeti
+pages:
+- [index.md, Home]
+- [introduction.md, Introduction]
+- [comparison.md, Comparison]

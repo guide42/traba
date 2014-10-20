@@ -1,2 +1,4 @@
-htmlcov/
-vendor/
+/docs/venv/
+/site/
+/htmlcov/
+/vendor/
