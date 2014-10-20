@@ -78,12 +78,15 @@ class Router implements RouterInterface
 
 function traverser($root, array $segments)
 {
+    $last = $root;
+
     foreach($segments as $i => $segment) {
         if (!is_array($root) &&
             !$root instanceof \ArrayAccess ||
             !isset($root[$segment])
         ) {
             return array(
+                'parent'    => $last,
                 'resource'  => $root,
                 'name'      => $segment,
                 'traversed' => array_slice($segments, 0, $i),
@@ -91,10 +94,12 @@ function traverser($root, array $segments)
             );
         }
 
+        $last = $root;
         $root = $root[$segment];
     }
 
     return array(
+        'parent'    => null,
         'resource'  => $root,
         'name'      => '',
         'traversed' => $segments,
