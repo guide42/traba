@@ -72,6 +72,16 @@ class Router implements RouterInterface
             throw new \RuntimeException('Route not found');
         }
 
+        $resource = $node['resource'];
+
+        if (is_object($resource) &&
+            property_exists($resource, '__parent') &&
+            property_exists($resource, '__name')
+        ) {
+            $resource->__parent = $node['last'][0];
+            $resource->__name = $node['last'][1];
+        }
+
         return [$route, $node['resource']];
     }
 
@@ -100,7 +110,7 @@ class Router implements RouterInterface
 
 function traverser($root, array $segments)
 {
-    $last = $root;
+    $last = array(null, '');
 
     foreach($segments as $i => $segment) {
         if (!is_array($root) &&
@@ -108,7 +118,7 @@ function traverser($root, array $segments)
             !isset($root[$segment])
         ) {
             return array(
-                'parent'    => $last,
+                'last'      => $last,
                 'resource'  => $root,
                 'name'      => $segment,
                 'traversed' => array_slice($segments, 0, $i),
@@ -116,12 +126,12 @@ function traverser($root, array $segments)
             );
         }
 
-        $last = $root;
+        $last = array($root, $segment);
         $root = $root[$segment];
     }
 
     return array(
-        'parent'    => null,
+        'last'      => $last,
         'resource'  => $root,
         'name'      => '',
         'traversed' => $segments,
