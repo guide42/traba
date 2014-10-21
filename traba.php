@@ -173,3 +173,18 @@ function assembler($resource)
 
     return array_values(array_filter(array_reverse($parts)));
 }
+
+class Resource extends \ArrayObject
+{
+    public $__parent = null;
+    public $__name = '';
+
+    public function offsetGet($name)
+    {
+        $resource = parent::offsetGet($name);
+        $resource->__parent = $this;
+        $resource->__name = $name;
+
+        return $resource;
+    }
+}

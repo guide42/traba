@@ -57,3 +57,5 @@ class Resource extends ArrayObject
     }
 }
 ```
+
+Exactly this class is available as `\Guide42\Traba\Resource`.
