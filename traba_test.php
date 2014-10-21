@@ -113,6 +113,23 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($segments, $router->assemble($resource));
     }
+
+    public function testAssembleExtra()
+    {
+        $root = new Resource(array(
+            'u' => new UserLocator(),
+        ));
+
+        $segments = array('u', '123', 'edit');
+
+        $router = new Router($root);
+        $router->addRoute('view_user', 'User', '');
+        $router->addRoute('view_user', 'User', 'edit');
+
+        list($route, $resource) = $router->match($segments);
+
+        $this->assertEquals($segments, $router->assemble($resource, 'edit'));
+    }
 }
 
 ### FIXTURES ##################################################################

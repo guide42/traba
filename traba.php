@@ -102,9 +102,15 @@ class Router implements RouterInterface
         return $this->match(array_filter(explode('/', $uri)));
     }
 
-    public function assemble($resource)
+    public function assemble($resource, $extra=null)
     {
-        return call_user_func($this->assembler, $resource);
+        $segments = call_user_func($this->assembler, $resource);
+
+        if ($extra !== null) {
+            $segments = array_merge($segments, array_values((array) $extra));
+        }
+
+        return $segments;
     }
 }
 
