@@ -11,13 +11,13 @@
          bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="Traba Test Suite">
-            <file>./traba_test.php</file>
+            <directory>tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <file>./traba.php</file>
+            <directory>library/</directory>
         </whitelist>
     </filter>
 </phpunit>
