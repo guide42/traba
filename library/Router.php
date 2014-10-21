@@ -2,30 +2,6 @@
 
 namespace Guide42\Traba;
 
-interface RouterInterface
-{
-    /**
-     * Traverse the given path through the tree and then match the result
-     * with the list of routes.
-     *
-     * @param array $segments path to route
-     *
-     * @throws \RuntimeException
-     * @return array
-     */
-    function match(array $segments);
-
-    /**
-     * Inverse of match, transforms a resource into segments.
-     *
-     * The given resource and, it whole lineage need to be location-aware for
-     * the assemble to work.
-     *
-     * @param object $resource
-     */
-    function assemble($resource);
-}
-
 class Router implements RouterInterface
 {
     protected $root;
@@ -75,8 +51,8 @@ class Router implements RouterInterface
         $resource = $node['resource'];
 
         if (is_object($resource) &&
-            property_exists($resource, '__parent') &&
-            property_exists($resource, '__name')
+        property_exists($resource, '__parent') &&
+        property_exists($resource, '__name')
         ) {
             $resource->__parent = $node['last'][0];
             $resource->__name = $node['last'][1];
@@ -178,112 +154,4 @@ function assembler($resource)
     }
 
     return array_values(array_filter(array_reverse($parts)));
-}
-
-class Resource extends \ArrayObject
-{
-    public $__parent = null;
-    public $__name = '';
-
-    public function offsetGet($name)
-    {
-        $resource = parent::offsetGet($name);
-        $resource->__parent = $this;
-        $resource->__name = $name;
-
-        return $resource;
-    }
-
-    public function offsetSet($name, $resource)
-    {
-        if (!$resource instanceof Resource) {
-            throw new \InvalidArgumentException('You must provide a resource');
-        }
-
-        parent::offsetSet($name, $resource);
-    }
-}
-
-class ResourceMapping extends Resource
-{
-    private $static = array();
-    private $dynamic = array();
-    private $dynbname = array();
-    private $resources = array();
-
-    public function offsetExists($name)
-    {
-        if (parent::offsetExists($name)) {
-            return true;
-        }
-
-        if (isset($this->resources[$name])) {
-            return true;
-        }
-
-        if (isset($this->static[$name])) {
-            return true;
-        }
-
-        foreach ($this->dynamic as $data) {
-            list($matcher, $fn) = $data;
-
-            try {
-                $resource = call_user_func($matcher, $name);
-
-                if ($resource === null) {
-                    continue;
-                }
-            } catch (\OutOfBoundsException $e) {
-                continue;
-            }
-
-            $ret = call_user_func($fn, $resource);
-
-            if ($ret instanceof Resource) {
-                $resource = $ret;
-            }
-
-            $this->resources[$name] = $resource;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function offsetGet($name)
-    {
-        if (parent::offsetExists($name)) {
-            return parent::offsetGet($name);
-        }
-
-        $resource = null;
-
-        if (isset($this->static[$name])) {
-            $resource = $this->static[$name];
-        }
-
-        elseif (isset($this->resources[$name])) {
-            $resource = $this->resources[$name];
-        }
-
-        if ($resource === null) {
-            throw new \OutOfBoundsException();
-        }
-
-        $resource->__parent = $this;
-        $resource->__name = $name;
-
-        return $resource;
-    }
-
-    public function set($matcher, \Closure $fn)
-    {
-        if ($matcher instanceof \Closure) {
-            $this->dynamic[] = array($matcher, $fn);
-        } else {
-            $this->static[$matcher] = $fn;
-        }
-    }
 }
