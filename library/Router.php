@@ -51,8 +51,8 @@ class Router implements RouterInterface
         $resource = $node['resource'];
 
         if (is_object($resource) &&
-        property_exists($resource, '__parent') &&
-        property_exists($resource, '__name')
+            property_exists($resource, '__parent') &&
+            property_exists($resource, '__name')
         ) {
             $resource->__parent = $node['last'][0];
             $resource->__name = $node['last'][1];
@@ -125,7 +125,7 @@ function matcher($routes, $resource, $name)
 {
     foreach ($routes as $route) {
         if ($route[2] === $name &&
-            ($route[1] === null ||
+           ($route[1] === null ||
             $resource instanceof $route[1])
         ) {
             return $route[0];
