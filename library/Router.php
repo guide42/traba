@@ -34,8 +34,8 @@ class Router implements RouterInterface
         $this->routes = [];
     }
 
-    public function addRoute($handler, $resource, $name) {
-        $this->routes[] = [$handler, $resource, $name];
+    public function addRoute($handler, $resource, $name, \Closure $req=null) {
+        $this->routes[] = [$handler, $resource, $name, $req];
     }
 
     public function match(array $segments)
@@ -126,7 +126,9 @@ function matcher($routes, $resource, $name)
     foreach ($routes as $route) {
         if ($route[2] === $name &&
            ($route[1] === null ||
-            $resource instanceof $route[1])
+            $resource instanceof $route[1]) &&
+           ($route[3] === null ||
+            call_user_func($route[3], $resource))
         ) {
             return $route[0];
         }
