@@ -3,6 +3,8 @@ Traba ~ Traversal Router
 
 An alternative to common pattern matching to route an URL to a resource.
 
+This is just a PoC. DO NOT USE IT IN PRODUCTION.
+
 Read the documentation in [docs/](docs/index.md).
 
 Badges
